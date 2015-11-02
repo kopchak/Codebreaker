@@ -19,16 +19,18 @@ module Codebreaker
       @attempts_quantity.times do |i|
         @count = i+1
         p "Attempt: #{@count}"
-        get_player_input
+        get_player_input!
         check_input
         if valid_data?
           check_for_victory
           comparison_of_the_values
           you_lose
+          play_again
           break if @player_answer == 'n'
         else
           p "Invalid data"
           you_lose
+          play_again
         end
       end
     end
@@ -38,18 +40,17 @@ module Codebreaker
       @player_name = gets.chomp
     end
 
-    def get_player_input
-      p "#{@player_name} please enter four digits from 1 to 6, format: 'x x x x' or input 'hint'"
+    def get_player_input!
+      p "#{@player_name} please enter four digits from 1 to 6, format: 'xxxx' or input 'hint'"
       @player_code = gets.chomp
     end
 
-    # def get_player_second_input
-    #   p "#{@player_name} please enter four digits from 1 to 6, format: 'x x x x'"
-    #   @player_code = gets.chomp
-    # end
+    def select_only_digits!
+      @player_code = /[1-6]{4}/.match(@player_code).to_s
+    end
 
     def player_input_to_arr!
-      @player_code = @player_code.split(' ').map(&:to_i)
+      @player_code = @player_code.split('').map(&:to_i)
     end
 
     def generate_code!
@@ -63,38 +64,31 @@ module Codebreaker
     end
 
     def you_lose
-      if @count == 10
-        p "I'm sorry #{@player_name} you lose"
-        play_again
-      end
+      p "I'm sorry #{@player_name} you lose" if @count == 10
     end
 
     def play_again
-      p "#{@player_name} you want the play again (y/n)?"
-      @player_answer = gets.chomp
-      start_game if @player_answer == 'y'
+      if @count == 10 || @player_code == @secret_code
+        p "#{@player_name} you want the play again (y/n)?"
+        @player_answer = gets.chomp
+        start_game if @player_answer == 'y'
+      end
     end
 
     def check_input
       if @player_code == 'hint' && @hint == 1
         @hint -= 1
         get_hint
-        # get_player_second_input
-        # check_input
-        # player_input_to_arr!
       elsif @player_code == 'hint' && @hint == 0
         p "#{@player_name} you have used a hint!"
-        # get_player_second_input
       else
+        select_only_digits!
         player_input_to_arr!
       end
     end
 
     def check_for_victory
-      if @player_code == @secret_code
-        p "Congrats #{@player_name}! You win!"
-        play_again
-      end
+      p "Congrats #{@player_name}! You win!" if @player_code == @secret_code
     end
 
     def valid_data?
