@@ -73,14 +73,6 @@ module Codebreaker
       end
     end
 
-    # context '#play_again' do
-    #   it 'when attempts quantity end' do
-    #     game.instance_variable_set(:@count, 10)
-    #     game.play_again
-    #     expect(game.play_again).to eq " you want the play again (y/n)?"
-    #   end
-    # end
-
     context '#check_input' do
       it 'if player has hint' do
         game.instance_variable_set(:@player_code, 'hint')
@@ -93,7 +85,7 @@ module Codebreaker
         game.instance_variable_set(:@player_code, 'hint')
         game.instance_variable_set(:@hint, 0)
         game.check_input
-        expect("#{@player_name} you have used a hint!").to eq game.check_input
+        expect(game.check_input).to eq "#{@player_name} you have used a hint!"
       end
 
       it 'player input a sting of digits' do
@@ -104,12 +96,19 @@ module Codebreaker
       end
     end
 
-    context '#check_for_victory' do
+    context '#check_for_victory?' do
       it 'when player win' do
         player_code = game.instance_variable_set(:@player_code, [1,1,1,1])
         secret_code = game.instance_variable_set(:@secret_code, [1,1,1,1])
-        game.check_for_victory
-        expect(game.check_for_victory).to eq "Congrats ! You win!"
+        game.check_for_victory?
+        expect(game.check_for_victory?).to eq true
+      end
+
+      it 'when player not win' do
+        player_code = game.instance_variable_set(:@player_code, [1,1,1,2])
+        secret_code = game.instance_variable_set(:@secret_code, [1,1,1,1])
+        game.check_for_victory?
+        expect(game.check_for_victory?).to eq false
       end
     end
 
@@ -117,13 +116,13 @@ module Codebreaker
       it 'expect true player input with secret code' do
         player_code = game.instance_variable_set(:@player_code, [1,1,1,1])
         secret_code = game.instance_variable_get(:@secret_code)
-        expect(player_code.size).to eq secret_code.size
+        expect(game.valid_data?).to eq true
       end
 
       it 'expect false player input with secret code' do
         player_code = game.instance_variable_set(:@player_code, [1,1,1])
         secret_code = game.instance_variable_get(:@secret_code)
-        expect(player_code.size).not_to eq secret_code.size
+        expect(game.valid_data?).to eq false
       end
     end
   end

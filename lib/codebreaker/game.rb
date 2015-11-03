@@ -22,17 +22,19 @@ module Codebreaker
         get_player_input!
         check_input
         if valid_data?
-          check_for_victory
           comparison_of_the_values
-          you_lose
-          play_again
-          break if @player_answer == 'n'
+          if check_for_victory?
+            p "Congrats #{@player_name}! You win!"
+            break
+          end
         else
           p "Invalid data"
-          you_lose
-          play_again
         end
       end
+      you_lose
+      p "#{@player_name} you want the play again (y/n)?"
+      @player_answer = gets.chomp
+      start_game if @player_answer == 'y'
     end
 
     def get_player_name
@@ -67,14 +69,6 @@ module Codebreaker
       p "I'm sorry #{@player_name} you lose" if @count == 10
     end
 
-    def play_again
-      if @count == 10 || @player_code == @secret_code
-        p "#{@player_name} you want the play again (y/n)?"
-        @player_answer = gets.chomp
-        start_game if @player_answer == 'y'
-      end
-    end
-
     def check_input
       if @player_code == 'hint' && @hint == 1
         @hint -= 1
@@ -87,8 +81,8 @@ module Codebreaker
       end
     end
 
-    def check_for_victory
-      p "Congrats #{@player_name}! You win!" if @player_code == @secret_code
+    def check_for_victory?
+      @player_code == @secret_code ? true : false
     end
 
     def valid_data?
