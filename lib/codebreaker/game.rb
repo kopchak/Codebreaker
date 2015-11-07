@@ -15,6 +15,7 @@ module Codebreaker
     def start_game
       new_game
       generate_code!
+      p "Secret code: #{@secret_code}"
       get_player_name
       @attempts_quantity.times do |i|
         @count = i+1
@@ -43,7 +44,7 @@ module Codebreaker
     end
 
     def get_player_input!
-      p "#{@player_name} please enter four digits from 1 to 6, format: 'xxxx' or input 'hint'"
+      p "#{@player_name} please enter four digits between 1 to 6, format: 'xxxx' or input 'hint'"
       @player_code = gets.chomp
     end
 
@@ -61,7 +62,13 @@ module Codebreaker
 
     def comparison_of_the_values
       tmp_arr = []
-      @secret_code.each_index { |i| @secret_code[i] == @player_code[i] ? tmp_arr << '+' : tmp_arr << '-' }
+      @secret_code.each_index do |i| 
+        if @secret_code[i] == @player_code[i]
+          tmp_arr << '+'
+        elsif @secret_code.include? @player_code[i]
+          tmp_arr << '-'
+        end
+      end
       p tmp_arr
     end
 
