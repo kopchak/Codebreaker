@@ -1,7 +1,9 @@
 require_relative 'version'
+require_relative 'interface'
 
 module Codebreaker
   class Game
+    include Interface
     def new_game
       @attempts_quantity = 10
       @player_name = ''
@@ -15,37 +17,26 @@ module Codebreaker
     def start_game
       new_game
       generate_code!
-      p "Secret code: #{@secret_code}"
       get_player_name
       @attempts_quantity.times do |i|
         @count = i+1
-        p "Attempt: #{@count}"
+        p_attempt_qantity
         get_player_input!
         check_input
         if valid_data?
           comparison_of_the_values
           if check_for_victory?
-            p "Congrats #{@player_name}! You win!"
+            p_you_win
             break
           end
         else
-          p "Invalid data"
+          p_invalid_data
         end
       end
       you_lose
-      p "#{@player_name} you want the play again (y/n)?"
+      p_play_again
       @player_answer = gets.chomp
       start_game if @player_answer == 'y'
-    end
-
-    def get_player_name
-      p "Welcome to the game 'Codebreaker', please enter your name: "
-      @player_name = gets.chomp
-    end
-
-    def get_player_input!
-      p "#{@player_name} please enter four digits between 1 to 6, format: 'xxxx' or input 'hint'"
-      @player_code = gets.chomp
     end
 
     def select_only_digits!
@@ -61,27 +52,45 @@ module Codebreaker
     end
 
     def comparison_of_the_values
-      tmp_arr = []
-      @secret_code.each_index do |i| 
-        if @secret_code[i] == @player_code[i]
-          tmp_arr << '+'
-        elsif @secret_code.include? @player_code[i]
-          tmp_arr << '-'
+      tmp_secret_arr = Array.new(@secret_code)
+      tmp_player_arr = Array.new(@player_code)
+      tmp_result_arr = []
+      tmp_secret_arr.each_index do |i|
+        if tmp_player_arr[i] == tmp_secret_arr[i]
+          tmp_result_arr[i] = '+'
+          tmp_secret_arr[i] = nil
+          tmp_player_arr[i] = nil
         end
       end
-      p tmp_arr
-    end
-
-    def you_lose
-      p "I'm sorry #{@player_name} you lose" if @count == 10
+      tmp_secret_arr.compact!
+      tmp_player_arr.compact!
+      tmp_secret_arr.each_index do |i|
+        if tmp_secret_arr.include?(tmp_player_arr[i])
+          if tmp_result_arr.include?(nil)
+            index_of_nil = tmp_result_arr.find_index(nil)
+            tmp_result_arr[index_of_nil] = '-'
+          else
+            if tmp_secret_arr.include?(tmp_player_arr[i])
+              index = tmp_secret_arr.find_index(tmp_player_arr[i])
+              tmp_secret_arr[index] = nil
+              tmp_result_arr << '-'
+            end
+          end
+        end
+      end
+      tmp_result_arr.compact!
+      p tmp_result_arr
     end
 
     def check_input
       if @player_code == 'hint' && @hint == 1
         @hint -= 1
         get_hint
+        get_player_input!
+        select_only_digits!
+        player_input_to_arr!
       elsif @player_code == 'hint' && @hint == 0
-        p "#{@player_name} you have used a hint!"
+        p_have_used_hint
       else
         select_only_digits!
         player_input_to_arr!
@@ -93,7 +102,7 @@ module Codebreaker
     end
 
     def valid_data?
-      @player_code.size == @secret_code.size ? true : false
+      @player_code.is_a?(Array) && @player_code.size == @secret_code.size ? true : false
     end
 
     def get_hint

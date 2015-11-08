@@ -45,22 +45,58 @@ module Codebreaker
     end
 
     context '#comparison_of_the_values' do
-      it 'all items in tmp array be [- - - -]' do
-        game.instance_variable_set(:@player_code, [0,0,0,0])
+      it 'received empty array' do
         game.instance_variable_get(:@secret_code)
-        expect(['-','-','-','-']).to eq game.comparison_of_the_values
+        game.instance_variable_set(:@player_code, [0,0,0,0])
+        expect(game.comparison_of_the_values).to eq []
       end
 
-      it 'all items in tmp array be [+ + + +]' do
-        game.instance_variable_set(:@player_code, [1,1,1,1])
+      it 'all items in array be [+ + + +]' do
         game.instance_variable_set(:@secret_code, [1,1,1,1])
-        expect(['+','+','+','+']).to eq game.comparison_of_the_values
+        game.instance_variable_set(:@player_code, [1,1,1,1])
+        expect(game.comparison_of_the_values).to eq ['+','+','+','+']
       end
 
-      it 'in array has items be [+ + - -]' do
-        game.instance_variable_set(:@player_code, [1,1,0,0])
-        game.instance_variable_set(:@secret_code, [1,1,2,2])
-        expect(['+','+','-','-']).to eq game.comparison_of_the_values
+      it 'in array has items be [- - - -]' do
+        game.instance_variable_set(:@secret_code, [1,2,3,4])
+        game.instance_variable_set(:@player_code, [4,3,2,1])
+        expect(game.comparison_of_the_values).to eq ['-','-','-','-']
+      end
+
+      it 'in array has items be [+ - - +]' do
+        game.instance_variable_set(:@secret_code, [1,3,2,3])
+        game.instance_variable_set(:@player_code, [1,2,3,3])
+        expect(game.comparison_of_the_values).to eq ['+','-','-','+']
+      end
+
+      it 'in array has items be [- + + -]' do
+        game.instance_variable_set(:@secret_code, [1,3,2,3])
+        game.instance_variable_set(:@player_code, [3,3,2,1])
+        expect(game.comparison_of_the_values).to eq ['-','+','+','-']
+      end
+
+      it 'in array has items be [+ +]' do
+        game.instance_variable_set(:@secret_code, [1,2,3,4])
+        game.instance_variable_set(:@player_code, [1,2,2,2])
+        expect(game.comparison_of_the_values).to eq ['+','+']
+      end
+
+      it 'in array has items be [- -]' do
+        game.instance_variable_set(:@secret_code, [1,1,4,4])
+        game.instance_variable_set(:@player_code, [3,3,1,1])
+        expect(game.comparison_of_the_values).to eq ['-','-']
+      end
+
+      it 'in array has items be [+]' do
+        game.instance_variable_set(:@secret_code, [1,1,4,4])
+        game.instance_variable_set(:@player_code, [3,3,4,2])
+        expect(game.comparison_of_the_values).to eq ['+']
+      end
+
+      it 'in array has items be [-]' do
+        game.instance_variable_set(:@secret_code, [1,1,4,4])
+        game.instance_variable_set(:@player_code, [3,4,2,2])
+        expect(game.comparison_of_the_values).to eq ['-']
       end
     end
 
