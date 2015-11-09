@@ -75,10 +75,34 @@ module Codebreaker
         expect(game.comparison_of_the_values).to eq ['-','+','+','-']
       end
 
+      it 'in array has items be [+ - +]' do
+        game.instance_variable_set(:@secret_code, [1,3,2,3])
+        game.instance_variable_set(:@player_code, [1,2,4,3])
+        expect(game.comparison_of_the_values).to eq ['+','-','+']
+      end
+
+      it 'in array has items be [- + -]' do
+        game.instance_variable_set(:@secret_code, [1,3,2,3])
+        game.instance_variable_set(:@player_code, [2,3,4,1])
+        expect(game.comparison_of_the_values).to eq ['-','+','-']
+      end
+
       it 'in array has items be [+ +]' do
         game.instance_variable_set(:@secret_code, [1,2,3,4])
         game.instance_variable_set(:@player_code, [1,2,2,2])
         expect(game.comparison_of_the_values).to eq ['+','+']
+      end
+
+      it 'in array has items be [+ -]' do
+        game.instance_variable_set(:@secret_code, [1,2,3,4])
+        game.instance_variable_set(:@player_code, [1,3,5,5])
+        expect(game.comparison_of_the_values).to eq ['+','-']
+      end
+
+      it 'in array has items be [- +]' do
+        game.instance_variable_set(:@secret_code, [1,2,3,4])
+        game.instance_variable_set(:@player_code, [2,5,3,5])
+        expect(game.comparison_of_the_values).to eq ['-','+']
       end
 
       it 'in array has items be [- -]' do
