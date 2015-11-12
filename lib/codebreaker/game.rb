@@ -2,8 +2,7 @@ require_relative 'version'
 
 module Codebreaker
   class Game
-    attr_accessor :player_name, :attempts_quantity
-    attr_reader :hint, :count
+    attr_reader :count, :hint
 
     def initialize(name, attempts)
       @player_name = name || 'Player'
