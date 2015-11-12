@@ -35,10 +35,6 @@ module Codebreaker
       @player_arr = str.split('').map(&:to_i)
     end
 
-    def generate_code!
-      4.times { |i| @secret_arr << rand(1..6) }
-    end
-
     def compare_arrays_of_values(player_arr)
       secret_arr = Array.new(@secret_arr)
       player_arr = Array.new(player_arr)
@@ -78,18 +74,22 @@ module Codebreaker
       @player_arr.is_a?(Array) && @player_arr.size == @secret_arr.size ? true : false
     end
 
-    def get_hint
-      hint = '****'
-      random = rand(4)
-      hint[random] = @secret_arr[random].to_s
-      hint
-    end
-
     def save_result(name, attempt, player_arr)
       File.open("#{name}_file.txt", "w") do |file|
         file.write("player name: #{name}, attempts quantity: #{attempt}, winning combination: #{player_arr}")
       end
     end
 
+    private
+      def get_hint
+        hint = '****'
+        random = rand(4)
+        hint[random] = @secret_arr[random].to_s
+        hint
+      end
+
+      def generate_code!
+        4.times { |i| @secret_arr << rand(1..6) }
+      end
   end
 end
