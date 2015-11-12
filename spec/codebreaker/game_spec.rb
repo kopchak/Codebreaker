@@ -3,183 +3,215 @@ require '../spec_helper'
 module Codebreaker
   describe Game do
 
-    before do
-      Game.new
+  let(:game) { Game.new }
+
+    context '#guess' do
+
+      before { game.instance_variable_set(:@secret_arr, [1,2,3,4]) }
+
+      it { expect(game.guess('aaaa')).to eq nil }
+      it { expect(game.guess('1234')).to eq '++++' }
+      it { expect(game.guess('4321')).to eq '----' }
+
+      it 'count work' do
+        5.times { game.guess('aaaa') }
+        count = game.instance_variable_get(:@count)
+        expect(count).to eq 5
+      end
     end
 
     context '#select_only_digits' do
-      it 'get string with letters' do
-        game.instance_variable_set(:@player_code, 'aaaa1234aaaa')
-        game.select_only_digits
-        player_code = game.instance_variable_get(:@player_code)
-        expect(player_code).to eq '1234'
+      it 'get string without letters' do
+        game.select_only_digits('str1234str')
+        player_str = game.instance_variable_get(:@player_str)
+        expect(player_str).to eq '1234'
+      end
+
+      it 'player string have four items' do
+        game.select_only_digits('str1234str')
+        player_str = game.instance_variable_get(:@player_str)
+        expect(player_str.size).to eq 4
+      end
+
+      it 'player string with numbers from 1 to 6' do
+        game.select_only_digits('str12348888str')
+        player_str = game.instance_variable_get(:@player_str)
+        expect(player_str).to match(/[1-6]+/)
       end
     end
 
     context '#str_to_arr' do
-      it 'get array from player input' do
-        game.instance_variable_set(:@player_code, '1234')
-        game.player_input_to_arr!
-        player_code = game.instance_variable_get(:@player_code)
-        expect(player_code).to eq [1,2,3,4]
+      it 'get array from player string' do
+        game.str_to_arr('1234')
+        player_arr = game.instance_variable_get(:@player_arr)
+        expect(player_arr).to eq [1,2,3,4]
       end
     end
 
     context '#generate_code!' do
       it 'get secret code' do
-        expect(:@secret_code).not_to be_empty
+        expect(:@secret_arr).not_to be_empty
       end
 
       it 'secret code have 4 items' do
-        secret_code = game.instance_variable_get(:@secret_code)
+        secret_code = game.instance_variable_get(:@secret_arr)
         expect(secret_code.size).to eq 4
       end
 
       it 'secret code with numbers from 1 to 6' do
-        secret_code = game.instance_variable_get(:@secret_code)
+        secret_code = game.instance_variable_get(:@secret_arr)
         expect("#{secret_code}").to match(/[1-6]+/)
       end
     end
 
-    context '#comparison_of_the_values' do
-      it 'received empty array' do
-        game.instance_variable_get(:@secret_code)
-        game.instance_variable_set(:@player_code, [0,0,0,0])
-        expect(game.comparison_of_the_values).to eq []
+    context '#compare_of_value' do
+
+      before { game.instance_variable_set(:@secret_arr, [1,2,3,4]) }
+
+      it 'received empty string' do
+        game.compare_of_value([5,5,5,5])
+        result_str = game.instance_variable_get(:@result_str)
+        expect(result_str).to eq ''
       end
 
-      it 'all items in array be [+ + + +]' do
-        game.instance_variable_set(:@secret_code, [1,1,1,1])
-        game.instance_variable_set(:@player_code, [1,1,1,1])
-        expect(game.comparison_of_the_values).to eq ['+','+','+','+']
+      it 'received string result "+"' do
+        game.compare_of_value([5,5,5,4])
+        result_str = game.instance_variable_get(:@result_str)
+        expect(result_str).to eq '+'
       end
 
-      it 'in array has items be [- - - -]' do
-        game.instance_variable_set(:@secret_code, [1,2,3,4])
-        game.instance_variable_set(:@player_code, [4,3,2,1])
-        expect(game.comparison_of_the_values).to eq ['-','-','-','-']
+      it 'received string result "++"' do
+        game.compare_of_value([5,5,3,4])
+        result_str = game.instance_variable_get(:@result_str)
+        expect(result_str).to eq '++'
       end
 
-      it 'in array has items be [+ - - +]' do
-        game.instance_variable_set(:@secret_code, [1,3,2,3])
-        game.instance_variable_set(:@player_code, [1,2,3,3])
-        expect(game.comparison_of_the_values).to eq ['+','-','-','+']
+      it 'received string result "+++"' do
+        game.compare_of_value([5,2,3,4])
+        result_str = game.instance_variable_get(:@result_str)
+        expect(result_str).to eq '+++'
       end
 
-      it 'in array has items be [- + + -]' do
-        game.instance_variable_set(:@secret_code, [1,3,2,3])
-        game.instance_variable_set(:@player_code, [3,3,2,1])
-        expect(game.comparison_of_the_values).to eq ['-','+','+','-']
+      it 'received string result "++++"' do
+        game.compare_of_value([1,2,3,4])
+        result_str = game.instance_variable_get(:@result_str)
+        expect(result_str).to eq '++++'
       end
 
-      it 'in array has items be [+ - +]' do
-        game.instance_variable_set(:@secret_code, [1,3,2,3])
-        game.instance_variable_set(:@player_code, [1,2,4,3])
-        expect(game.comparison_of_the_values).to eq ['+','-','+']
+      it 'received string result "++--"' do
+        game.compare_of_value([2,1,3,4])
+        result_str = game.instance_variable_get(:@result_str)
+        expect(result_str).to eq '++--'
       end
 
-      it 'in array has items be [- + -]' do
-        game.instance_variable_set(:@secret_code, [1,3,2,3])
-        game.instance_variable_set(:@player_code, [2,3,4,1])
-        expect(game.comparison_of_the_values).to eq ['-','+','-']
+      it 'received string result "+---"' do
+        game.compare_of_value([3,1,2,4])
+        result_str = game.instance_variable_get(:@result_str)
+        expect(result_str).to eq '+---'
       end
 
-      it 'in array has items be [+ +]' do
-        game.instance_variable_set(:@secret_code, [1,2,3,4])
-        game.instance_variable_set(:@player_code, [1,2,2,2])
-        expect(game.comparison_of_the_values).to eq ['+','+']
+      it 'received string result "----"' do
+        game.compare_of_value([4,3,2,1])
+        result_str = game.instance_variable_get(:@result_str)
+        expect(result_str).to eq '----'
       end
 
-      it 'in array has items be [+ -]' do
-        game.instance_variable_set(:@secret_code, [1,2,3,4])
-        game.instance_variable_set(:@player_code, [1,3,5,5])
-        expect(game.comparison_of_the_values).to eq ['+','-']
+      it 'received string result "----"' do
+        game.compare_of_value([4,3,2,1])
+        result_str = game.instance_variable_get(:@result_str)
+        expect(result_str).to eq '----'
       end
 
-      it 'in array has items be [- +]' do
-        game.instance_variable_set(:@secret_code, [1,2,3,4])
-        game.instance_variable_set(:@player_code, [2,5,3,5])
-        expect(game.comparison_of_the_values).to eq ['-','+']
+      it 'received string result "---"' do
+        game.compare_of_value([4,3,2,5])
+        result_str = game.instance_variable_get(:@result_str)
+        expect(result_str).to eq '---'
       end
 
-      it 'in array has items be [- -]' do
-        game.instance_variable_set(:@secret_code, [1,1,4,4])
-        game.instance_variable_set(:@player_code, [3,3,1,1])
-        expect(game.comparison_of_the_values).to eq ['-','-']
+      it 'received string result "--"' do
+        game.compare_of_value([4,3,5,5])
+        result_str = game.instance_variable_get(:@result_str)
+        expect(result_str).to eq '--'
       end
 
-      it 'in array has items be [+]' do
-        game.instance_variable_set(:@secret_code, [1,1,4,4])
-        game.instance_variable_set(:@player_code, [3,3,4,2])
-        expect(game.comparison_of_the_values).to eq ['+']
-      end
-
-      it 'in array has items be [-]' do
-        game.instance_variable_set(:@secret_code, [1,1,4,4])
-        game.instance_variable_set(:@player_code, [3,4,2,2])
-        expect(game.comparison_of_the_values).to eq ['-']
+      it 'received string result "-"' do
+        game.compare_of_value([4,5,5,5])
+        result_str = game.instance_variable_get(:@result_str)
+        expect(result_str).to eq '-'
       end
     end
 
-    context '#you_lose' do
-      it 'print you_lose when ended the last attempt' do
-        game.instance_variable_set(:@player_name, 'den')
-        game.instance_variable_set(:@count, 10)
-        game.instance_variable_set(:@player_code, [0,0,0,0])
-        expect(game.you_lose).to eq ("I'm sorry den you lose")
+    context '#check_hint' do
+      it 'player have 1 hint ' do
+        hint_quantity = game.instance_variable_get(:@hint_quantity)
+        expect(hint_quantity).to eq 1
+      end
+
+      it 'return 0 if player has been used "hint"' do
+        game.check_hint('hint')
+        hint_quantity = game.instance_variable_get(:@hint_quantity)
+        expect(hint_quantity).to eq 0
+      end
+
+      it 'return false if hint quantity eq 0' do
+        game.instance_variable_set(:@hint_quantity, 0)
+        expect(game.check_hint('hint')).to eq false
       end
     end
 
-    context '#check_input' do
-      it 'if player has hint' do
-        game.instance_variable_set(:@player_code, 'hint')
-        game.check_input
-        hint = game.instance_variable_get(:@hint)
-        expect(hint).to eq 0
+    context '#victory?' do
+
+      before { game.instance_variable_set(:@secret_arr, [1,2,3,4]) }
+
+      it 'return true if player_arr eq secret_arr' do
+        game.instance_variable_set(:@player_arr, [1,2,3,4])
+        expect(game.victory?).to eq true
       end
 
-      it 'if player not has hint' do
-        game.instance_variable_set(:@player_code, 'hint')
-        game.instance_variable_set(:@hint, 0)
-        game.check_input
-        expect(game.check_input).to eq "#{@player_name} you have used a hint!"
-      end
-
-      it 'player input a sting of digits' do
-        game.instance_variable_set(:@player_code, '1111')
-        game.check_input
-        player_code = game.instance_variable_get(:@player_code)
-        expect(player_code).to eq [1,1,1,1]
+      it 'return false if player_arr not eq secret_arr' do
+        game.instance_variable_set(:@player_arr, [1,1,1,1])
+        expect(game.victory?).to eq false
       end
     end
 
-    context '#check_for_victory?' do
-      it 'when player win' do
-        player_code = game.instance_variable_set(:@player_code, [1,1,1,1])
-        secret_code = game.instance_variable_set(:@secret_code, [1,1,1,1])
-        game.check_for_victory?
-        expect(game.check_for_victory?).to eq true
+    context '#lose?' do
+      it 'return true if attempts count eq 0' do
+        game.instance_variable_set(:@attempts_quantity, 0)
+        expect(game.lose?).to eq true
       end
 
-      it 'when player not win' do
-        player_code = game.instance_variable_set(:@player_code, [1,1,1,2])
-        secret_code = game.instance_variable_set(:@secret_code, [1,1,1,1])
-        game.check_for_victory?
-        expect(game.check_for_victory?).to eq false
+      it 'return false if attempts count eq 5' do
+        game.instance_variable_set(:@attempts_quantity, 5)
+        expect(game.lose?).to eq false
       end
     end
 
-    context 'valid_data?' do
-      it 'expect true player input with secret code' do
-        player_code = game.instance_variable_set(:@player_code, [1,1,1,1])
-        secret_code = game.instance_variable_get(:@secret_code)
+    context '#valid_data?' do
+      it 'return true if player input eq array and size = 4' do
+        game.instance_variable_set(:@player_arr, [1,1,1,1])
         expect(game.valid_data?).to eq true
       end
 
-      it 'expect false player input with secret code' do
-        player_code = game.instance_variable_set(:@player_code, [1,1,1])
-        secret_code = game.instance_variable_get(:@secret_code)
+      it 'return false if player input eq array and size = 3' do
+        game.instance_variable_set(:@player_arr, [1,1,1])
         expect(game.valid_data?).to eq false
+      end
+
+      it 'return false if player input eq string and size = 4' do
+        game.instance_variable_set(:@player_arr, 'aaaa')
+        expect(game.valid_data?).to eq false
+      end
+    end
+
+    context '#save_result' do
+      it 'exist file if save result' do
+        game.save_result(:@player_name, :@count, :@player_arr)
+        expect(File.exist?("#{@player_name}_file.txt")).to eq true
+      end
+
+      it 'not exist file if save result' do
+        game.save_result(:@player_name, :@count, :@player_arr)
+        expect(File.exist?("#{@player_name}")).to eq false
       end
     end
   end

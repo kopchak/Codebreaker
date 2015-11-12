@@ -2,13 +2,13 @@ require_relative 'version'
 
 module Codebreaker
   class Game
-    attr_reader :count, :hint
+    attr_reader :count, :hint_quantity
 
-    def initialize(name, attempts)
-      @player_name = name || 'Player'
-      @attempts_quantity = attempts || 10
+    def initialize(name = 'Player', attempts = 10)
+      @player_name = name
+      @attempts_quantity = attempts
       @secret_arr, @player_arr = [], []
-      @hint = 1
+      @hint_quantity = 1
       @count = 0
       generate_code!
     end
@@ -20,11 +20,13 @@ module Codebreaker
       select_only_digits(str)
       str_to_arr(@player_str)
       if valid_data?
-        compare_arrays_of_values(@player_arr)
-        victory?
+        result = compare_of_value(@player_arr)
+      else
+        'invalid data'
       end
       lose?
-      @result_str
+      victory?
+      result
     end
 
     def select_only_digits(str)
@@ -35,30 +37,32 @@ module Codebreaker
       @player_arr = str.split('').map(&:to_i)
     end
 
-    def compare_arrays_of_values(player_arr)
+    def compare_of_value(player_arr)
       secret_arr = Array.new(@secret_arr)
       player_arr = Array.new(player_arr)
       @result_str = ''
       player_arr.each_index do |i|
         if player_arr[i] == secret_arr[i]
           @result_str += '+'
-          secret_arr.delete_at(i)
-          player_arr.delete_at(i)
+          secret_arr[i] = 0
+          player_arr[i] = nil
         end
       end
       player_arr.each_index do |i|
         if secret_arr.include?(player_arr[i])
           @result_str += '-'
           index = secret_arr.find_index(player_arr[i])
-          secret_arr[index] = nil
+          secret_arr[index] = 0
         end
       end
+      @result_str
     end
 
     def check_hint(str)
-      if str == 'hint' && @hint == 1
-        @hint -= 1
+      if str == 'hint' && @hint_quantity == 1
         get_hint
+      elsif str == 'hint' && @hint_quantity == 0
+        false
       end
     end
 
@@ -74,15 +78,16 @@ module Codebreaker
       @player_arr.is_a?(Array) && @player_arr.size == @secret_arr.size ? true : false
     end
 
-    def save_result(name, attempt, player_arr)
+    def save_result(name, count, player_arr)
       File.open("#{name}_file.txt", "w") do |file|
-        file.write("player name: #{name}, attempts quantity: #{attempt}, winning combination: #{player_arr}")
+        file.write("player name: #{name}, attempts quantity: #{count}, winning combination: #{player_arr}")
       end
     end
 
     private
       def get_hint
         hint = '****'
+        @hint_quantity -= 1
         random = rand(4)
         hint[random] = @secret_arr[random].to_s
         hint
