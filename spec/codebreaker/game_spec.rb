@@ -3,23 +3,20 @@ require '../spec_helper'
 module Codebreaker
   describe Game do
 
-    let(:game) { Game.new }
-
     before do
-      game.new_game
-      game.generate_code!
+      Game.new
     end
 
-    context '#select_only_digits!' do
+    context '#select_only_digits' do
       it 'get string with letters' do
         game.instance_variable_set(:@player_code, 'aaaa1234aaaa')
-        game.select_only_digits!
+        game.select_only_digits
         player_code = game.instance_variable_get(:@player_code)
         expect(player_code).to eq '1234'
       end
     end
 
-    context '#player_input_to_arr!' do
+    context '#str_to_arr' do
       it 'get array from player input' do
         game.instance_variable_set(:@player_code, '1234')
         game.player_input_to_arr!
