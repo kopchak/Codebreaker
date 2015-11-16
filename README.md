@@ -1,6 +1,6 @@
 # Codebreaker
 
-TODO: Write a gem description
+If you want play, run bin/user_interface
 
 ## Installation
 

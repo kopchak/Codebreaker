@@ -3,47 +3,46 @@ require '../spec_helper'
 module Codebreaker
   describe Game do
 
+  FIVE = 5
+  FOUR = 4
+
   let(:game) { Game.new }
 
     context '#guess' do
 
       before { game.instance_variable_set(:@secret_arr, [1,2,3,4]) }
 
-      it { expect(game.guess('aaaa')).to eq nil }
+      it { expect(game.guess('aaaaaa')).to eq false }
       it { expect(game.guess('1234')).to eq '++++' }
       it { expect(game.guess('4321')).to eq '----' }
 
       it 'count work' do
-        5.times { game.guess('aaaa') }
+        FIVE.times { game.guess('1111') }
         count = game.instance_variable_get(:@count)
-        expect(count).to eq 5
+        expect(count).to eq FIVE
       end
     end
 
     context '#select_only_digits' do
       it 'get string without letters' do
-        game.select_only_digits('str1234str')
-        player_str = game.instance_variable_get(:@player_str)
+        player_str = game.select_only_digits('str1234str')
         expect(player_str).to eq '1234'
       end
 
       it 'player string have four items' do
-        game.select_only_digits('str1234str')
-        player_str = game.instance_variable_get(:@player_str)
-        expect(player_str.size).to eq 4
+        player_str = game.select_only_digits('str1234str')
+        expect(player_str.size).to eq FOUR
       end
 
       it 'player string with numbers from 1 to 6' do
-        game.select_only_digits('str12348888str')
-        player_str = game.instance_variable_get(:@player_str)
+        player_str = game.select_only_digits('str12348888str')
         expect(player_str).to match(/[1-6]+/)
       end
     end
 
     context '#str_to_arr' do
       it 'get array from player string' do
-        game.str_to_arr('1234')
-        player_arr = game.instance_variable_get(:@player_arr)
+        player_arr = game.str_to_arr('1234')
         expect(player_arr).to eq [1,2,3,4]
       end
     end
@@ -55,7 +54,7 @@ module Codebreaker
 
       it 'secret code have 4 items' do
         secret_code = game.instance_variable_get(:@secret_arr)
-        expect(secret_code.size).to eq 4
+        expect(secret_code.size).to eq FOUR
       end
 
       it 'secret code with numbers from 1 to 6' do
@@ -69,74 +68,57 @@ module Codebreaker
       before { game.instance_variable_set(:@secret_arr, [1,2,3,4]) }
 
       it 'received empty string' do
-        game.compare_of_value([5,5,5,5])
-        result_str = game.instance_variable_get(:@result_str)
+        result_str = game.compare_of_value([5,5,5,5])
         expect(result_str).to eq ''
       end
 
       it 'received string result "+"' do
-        game.compare_of_value([5,5,5,4])
-        result_str = game.instance_variable_get(:@result_str)
+        result_str = game.compare_of_value([5,5,5,4])
         expect(result_str).to eq '+'
       end
 
       it 'received string result "++"' do
-        game.compare_of_value([5,5,3,4])
-        result_str = game.instance_variable_get(:@result_str)
+        result_str = game.compare_of_value([5,5,3,4])
         expect(result_str).to eq '++'
       end
 
       it 'received string result "+++"' do
-        game.compare_of_value([5,2,3,4])
-        result_str = game.instance_variable_get(:@result_str)
+        result_str = game.compare_of_value([5,2,3,4])
         expect(result_str).to eq '+++'
       end
 
       it 'received string result "++++"' do
-        game.compare_of_value([1,2,3,4])
-        result_str = game.instance_variable_get(:@result_str)
+        result_str = game.compare_of_value([1,2,3,4])
         expect(result_str).to eq '++++'
       end
 
       it 'received string result "++--"' do
-        game.compare_of_value([2,1,3,4])
-        result_str = game.instance_variable_get(:@result_str)
+        result_str = game.compare_of_value([2,1,3,4])
         expect(result_str).to eq '++--'
       end
 
       it 'received string result "+---"' do
-        game.compare_of_value([3,1,2,4])
-        result_str = game.instance_variable_get(:@result_str)
+        result_str = game.compare_of_value([3,1,2,4])
         expect(result_str).to eq '+---'
       end
 
       it 'received string result "----"' do
-        game.compare_of_value([4,3,2,1])
-        result_str = game.instance_variable_get(:@result_str)
-        expect(result_str).to eq '----'
-      end
-
-      it 'received string result "----"' do
-        game.compare_of_value([4,3,2,1])
-        result_str = game.instance_variable_get(:@result_str)
+        result_str = game.compare_of_value([4,3,2,1])
         expect(result_str).to eq '----'
       end
 
       it 'received string result "---"' do
-        game.compare_of_value([4,3,2,5])
-        result_str = game.instance_variable_get(:@result_str)
+        result_str = game.compare_of_value([4,3,2,5])
         expect(result_str).to eq '---'
       end
 
       it 'received string result "--"' do
-        game.compare_of_value([4,3,5,5])
-        result_str = game.instance_variable_get(:@result_str)
+        result_str = game.compare_of_value([4,3,5,5])
         expect(result_str).to eq '--'
       end
 
       it 'received string result "-"' do
-        game.compare_of_value([4,5,5,5])
-        result_str = game.instance_variable_get(:@result_str)
+        result_str = game.compare_of_value([4,5,5,5])
         expect(result_str).to eq '-'
       end
     end
@@ -206,12 +188,12 @@ module Codebreaker
     context '#save_result' do
       it 'exist file if save result' do
         game.save_result(:@player_name, :@count, :@player_arr)
-        expect(File.exist?("#{@player_name}_file.txt")).to eq true
+        expect(File.exist?("#{:@player_name}_file.txt")).to eq true
       end
 
       it 'not exist file if save result' do
         game.save_result(:@player_name, :@count, :@player_arr)
-        expect(File.exist?("#{@player_name}")).to eq false
+        expect(File.exist?("#{:@player_name}")).to eq false
       end
     end
   end

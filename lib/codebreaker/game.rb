@@ -2,7 +2,8 @@ require_relative 'version'
 
 module Codebreaker
   class Game
-    attr_reader :count, :hint_quantity
+    FOUR = 4
+    attr_reader :count, :hint_quantity, :attempts_quantity, :player_arr
 
     def initialize(name = 'Player', attempts = 10)
       @player_name = name
@@ -16,16 +17,13 @@ module Codebreaker
     def guess(str)
       @attempts_quantity -= 1
       @count += 1
-      check_hint(str)
       select_only_digits(str)
       str_to_arr(@player_str)
       if valid_data?
         result = compare_of_value(@player_arr)
       else
-        'invalid data'
+        result = false
       end
-      lose?
-      victory?
       result
     end
 
@@ -40,22 +38,22 @@ module Codebreaker
     def compare_of_value(player_arr)
       secret_arr = Array.new(@secret_arr)
       player_arr = Array.new(player_arr)
-      @result_str = ''
+      result_str = ''
       player_arr.each_index do |i|
         if player_arr[i] == secret_arr[i]
-          @result_str += '+'
+          result_str += '+'
           secret_arr[i] = 0
           player_arr[i] = nil
         end
       end
       player_arr.each_index do |i|
         if secret_arr.include?(player_arr[i])
-          @result_str += '-'
+          result_str += '-'
           index = secret_arr.find_index(player_arr[i])
           secret_arr[index] = 0
         end
       end
-      @result_str
+      result_str
     end
 
     def check_hint(str)
@@ -94,7 +92,7 @@ module Codebreaker
       end
 
       def generate_code!
-        4.times { |i| @secret_arr << rand(1..6) }
+        FOUR.times { |i| @secret_arr << rand(1..6) }
       end
   end
 end
