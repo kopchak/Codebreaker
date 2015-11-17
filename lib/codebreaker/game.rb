@@ -57,9 +57,9 @@ module Codebreaker
     end
 
     def check_hint(str)
-      if str == 'hint' && @hint_quantity == 1
+      if @hint_quantity == 1
         get_hint
-      elsif str == 'hint' && @hint_quantity == 0
+      elsif @hint_quantity == 0
         false
       end
     end

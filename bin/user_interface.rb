@@ -1,5 +1,4 @@
-require '/home/den/codebreaker/lib/codebreaker/game'
-# require '../lib/codebreaker/game'
+require '../lib/codebreaker/game'
 include Codebreaker
 
 class Interface
@@ -28,7 +27,7 @@ class Interface
   end
 
   def display_game_over
-    p 'Game over!' if @game.lose?
+    p 'Game over! You lose' if @game.lose? && !@game.victory?
   end
 
   def display_you_win
@@ -49,6 +48,7 @@ class Interface
 
   def attempt
     loop do
+      p "Available hint: #{@game.hint_quantity}"
       get_player_input
       if @user_input == 'hint'
         result = @game.check_hint(@user_input)
@@ -59,7 +59,6 @@ class Interface
       result = 'Invalid data' unless result
       break if @game.attempts_quantity == 0
       p result
-      p @game
     end
     display_game_over
     save_result
