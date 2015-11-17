@@ -1,6 +1,6 @@
 # Codebreaker
 
-If you want play, run bin/user_interface
+If you want play, run bin/play_codebreaker
 
 ## Installation
 

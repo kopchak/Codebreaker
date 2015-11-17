@@ -1,0 +1,1 @@
+player name: @player_name, attempts quantity: @count, winning combination: @player_arr
