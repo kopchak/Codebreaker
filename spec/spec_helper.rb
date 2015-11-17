@@ -3,5 +3,5 @@ require 'codebreaker'
 RSpec.configure do |config|
   config.color = true
   config.tty = true
-  config.formatter = :documentation 
+  config.formatter = :documentation
 end
