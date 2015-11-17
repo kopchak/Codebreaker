@@ -1,7 +1,8 @@
-require '../lib/codebreaker/game'
+require '/home/den/codebreaker/lib/codebreaker/game'
+# require '../lib/codebreaker/game'
+include Codebreaker
 
 class Interface
-  include Codebreaker
 
   def new_game
     get_player_name
@@ -46,7 +47,7 @@ class Interface
     @game.save_result(@player_name, @game.count, @game.player_arr) if answer == 'y'
   end
 
-  def try
+  def attempt
     loop do
       get_player_input
       if @user_input == 'hint'
@@ -66,9 +67,8 @@ class Interface
   end
 
   def launch
-    interface = Interface.new
-    interface.new_game
-    interface.try
+    new_game
+    attempt
   end
 
 end
