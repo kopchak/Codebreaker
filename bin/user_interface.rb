@@ -37,7 +37,7 @@ class Interface
   def play_again
     p 'You want play again (y/n)? : '
     answer = gets.chomp
-    launch_yourself if answer == 'y'
+    launch if answer == 'y'
   end
 
   def save_result
@@ -65,13 +65,13 @@ class Interface
     play_again
   end
 
-  def launch_yourself
+  def launch
     interface = Interface.new
     interface.new_game
     interface.try
   end
 
-  interface = Interface.new
-  interface.new_game
-  interface.try
 end
+
+interface = Interface.new
+interface.launch
