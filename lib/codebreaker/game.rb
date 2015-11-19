@@ -3,6 +3,8 @@ require_relative 'version'
 module Codebreaker
   class Game
     FOUR = 4
+    HINT_STR = 'hint'
+
     attr_reader :count, :hint_quantity, :attempts_quantity, :player_arr
 
     def initialize(name = 'Player', attempts = 10)
@@ -17,12 +19,16 @@ module Codebreaker
     def guess(str)
       @attempts_quantity -= 1
       @count += 1
-      select_only_digits(str)
-      str_to_arr(@player_str)
-      if valid_data?
-        result = compare_of_value(@player_arr)
+      if str == HINT_STR
+        result = check_hint(str)
       else
-        result = false
+        select_only_digits(str)
+        str_to_arr(@player_str)
+        if valid_data?
+          result = compare_of_value(@player_arr)
+        else
+          result = false
+        end
       end
       result
     end

@@ -4,19 +4,19 @@ module Codebreaker
   class Interface
 
     def new_game
-      get_player_name
-      get_attempts_quantity
       @game = Codebreaker::Game.new(@player_name, @attempts_quantity)
     end
 
     def get_player_name
       p 'Welcome! Please enter your name: '
       @player_name = gets.chomp
+      get_player_name if @player_name.empty?
     end
 
     def get_attempts_quantity
       p 'Please enter attempts quantity: '
       @attempts_quantity = gets.to_i
+      get_attempts_quantity if @attempts_quantity.zero?
     end
 
     def get_player_input
@@ -46,17 +46,12 @@ module Codebreaker
 
     def attempt
       loop do
-        p "Available hint: #{@game.hint_quantity}"
         get_player_input
-        if @user_input == 'hint'
-          result = @game.check_hint(@user_input)
-        else
-          result = @game.guess(@user_input)
-          break if display_you_win
-        end
+        result = @game.guess(@user_input)
         result = 'Invalid data' unless result
-        break if @game.attempts_quantity == 0
         p result
+        break if display_you_win
+        break if @game.attempts_quantity == 0
       end
       display_game_over
       save_result
@@ -64,6 +59,8 @@ module Codebreaker
     end
 
     def launch
+      get_player_name
+      get_attempts_quantity
       new_game
       attempt
     end
