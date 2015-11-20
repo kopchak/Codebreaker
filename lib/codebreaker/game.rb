@@ -3,7 +3,6 @@ require_relative 'version'
 module Codebreaker
   class Game
     FOUR = 4
-    HINT_STR = 'hint'
 
     attr_reader :count, :hint_quantity, :attempts_quantity, :player_arr
 
@@ -19,16 +18,12 @@ module Codebreaker
     def guess(str)
       @attempts_quantity -= 1
       @count += 1
-      if str == HINT_STR
-        result = check_hint(str)
+      select_only_digits(str)
+      str_to_arr(@player_str)
+      if valid_data?
+        result = compare_of_value(@player_arr)
       else
-        select_only_digits(str)
-        str_to_arr(@player_str)
-        if valid_data?
-          result = compare_of_value(@player_arr)
-        else
-          result = false
-        end
+        result = false
       end
       result
     end
@@ -62,8 +57,10 @@ module Codebreaker
       result_str
     end
 
-    def check_hint(str)
+    def check_hint
       if @hint_quantity == 1
+        @attempts_quantity -= 1
+        @hint_quantity -= 1
         get_hint
       elsif @hint_quantity == 0
         false
@@ -91,7 +88,7 @@ module Codebreaker
     private
       def get_hint
         hint = '****'
-        @hint_quantity -= 1
+        
         random = rand(4)
         hint[random] = @secret_arr[random].to_s
         hint

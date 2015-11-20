@@ -1,5 +1,5 @@
 require_relative 'game'
-
+require 'byebug'
 module Codebreaker
   class Interface
 
@@ -47,7 +47,11 @@ module Codebreaker
     def attempt
       loop do
         get_player_input
-        result = @game.guess(@user_input)
+        if @user_input == 'hint'
+          result = @game.check_hint
+        else
+          result = @game.guess(@user_input)
+        end
         result = 'Invalid data' unless result
         p result
         break if display_you_win

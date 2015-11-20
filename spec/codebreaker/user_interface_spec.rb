@@ -85,7 +85,7 @@ module Codebreaker
       end
 
       it 'received the message to get hint' do
-        game.stub(:check_hint).and_return('*2**')
+        game.stub(:get_hint).and_return('*2**')
         interface.stub(:get_player_input).and_return('hint')
         interface.instance_variable_set(:@user_input, 'hint')
         expect(interface).to receive(:p).with("*2**")

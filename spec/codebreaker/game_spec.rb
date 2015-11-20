@@ -130,14 +130,14 @@ module Codebreaker
       end
 
       it 'return 0 if player has been used "hint"' do
-        game.check_hint('hint')
+        game.check_hint
         hint_quantity = game.instance_variable_get(:@hint_quantity)
         expect(hint_quantity).to eq 0
       end
 
       it 'return false if hint quantity eq 0' do
         game.instance_variable_set(:@hint_quantity, 0)
-        expect(game.check_hint('hint')).to eq false
+        expect(game.check_hint).to eq false
       end
     end
 
