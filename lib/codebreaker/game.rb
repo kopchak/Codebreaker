@@ -2,7 +2,7 @@ require_relative 'version'
 
 module Codebreaker
   class Game
-    FOUR = 4
+    SECRET_CODE_SIZE = 4
 
     attr_reader :count, :hint_quantity, :attempts_quantity, :player_arr
 
@@ -68,15 +68,15 @@ module Codebreaker
     end
 
     def victory?
-      @player_arr == @secret_arr ? true : false
+      @player_arr == @secret_arr
     end
 
     def lose?
-      @attempts_quantity == 0 ? true : false
+      @attempts_quantity == 0
     end
 
     def valid_data?
-      @player_arr.is_a?(Array) && @player_arr.size == @secret_arr.size ? true : false
+      @player_arr.is_a?(Array) && @player_arr.size == @secret_arr.size
     end
 
     def save_result(name, count, player_arr)
@@ -87,15 +87,14 @@ module Codebreaker
 
     private
       def get_hint
-        hint = '****'
-        
-        random = rand(4)
+        hint = '*' * SECRET_CODE_SIZE
+        random = rand(SECRET_CODE_SIZE)
         hint[random] = @secret_arr[random].to_s
         hint
       end
 
       def generate_code!
-        FOUR.times { |i| @secret_arr << rand(1..6) }
+        SECRET_CODE_SIZE.times { |i| @secret_arr << rand(1..6) }
       end
   end
 end

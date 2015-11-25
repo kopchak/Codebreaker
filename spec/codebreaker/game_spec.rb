@@ -2,9 +2,8 @@ require '../spec_helper'
  
 module Codebreaker
   describe Game do
-
-  FIVE = 5
-  FOUR = 4
+  
+  SECRET_CODE_SIZE = 4
 
   let(:game) { Game.new }
 
@@ -16,10 +15,39 @@ module Codebreaker
       it { expect(game.guess('1234')).to eq '++++' }
       it { expect(game.guess('4321')).to eq '----' }
 
+      it 'decreases attempts quantity' do
+        SECRET_CODE_SIZE.times { game.guess('1111') }
+        attempts_quantity = game.instance_variable_get(:@attempts_quantity)
+        expect(attempts_quantity).to eq 6
+      end
+
       it 'count work' do
-        FIVE.times { game.guess('1111') }
+        SECRET_CODE_SIZE.times { game.guess('1111') }
         count = game.instance_variable_get(:@count)
-        expect(count).to eq FIVE
+        expect(count).to eq SECRET_CODE_SIZE
+      end
+
+      it 'called method select_only_digits' do
+        pending
+        expect(game.guess('a1111a')).to receive(:select_only_digits).with('a1111a')
+      end
+
+      it 'called method str_to_arr' do
+        pending
+        game.stub(:str_to_arr).and_return('1111')
+        expect(game.guess('a1111a')).to receive(:str_to_arr).with('1111')
+      end
+
+      it 'called method valid_data?' do
+        pending
+        # game.instance_variable_set(:@player_arr, [1,1,1,1])
+        expect(game.guess('a1111a')).to receive(:valid_data?).once
+      end
+
+      it 'called method compare_of_value' do
+        pending
+        # game.instance_variable_set(:@player_arr, [1,1,1,1])
+        expect(game.guess('a1111a')).to receive(:compare_of_value).with([1,1,1,1])
       end
     end
 
@@ -31,12 +59,7 @@ module Codebreaker
 
       it 'player string have four items' do
         player_str = game.select_only_digits('str1234str')
-        expect(player_str.size).to eq FOUR
-      end
-
-      it 'player string with numbers from 1 to 6' do
-        player_str = game.select_only_digits('str12348888str')
-        expect(player_str).to match(/[1-6]+/)
+        expect(player_str.size).to eq SECRET_CODE_SIZE
       end
     end
 
@@ -44,6 +67,11 @@ module Codebreaker
       it 'get array from player string' do
         player_arr = game.str_to_arr('1234')
         expect(player_arr).to eq [1,2,3,4]
+      end
+
+      it 'array have SECRET_CODE_SIZE items count' do
+        player_arr = game.str_to_arr('1234')
+        expect(player_arr.size).to eq SECRET_CODE_SIZE
       end
     end
 
@@ -54,7 +82,7 @@ module Codebreaker
 
       it 'secret code have 4 items' do
         secret_code = game.instance_variable_get(:@secret_arr)
-        expect(secret_code.size).to eq FOUR
+        expect(secret_code.size).to eq SECRET_CODE_SIZE
       end
 
       it 'secret code with numbers from 1 to 6' do

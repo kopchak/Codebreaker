@@ -24,12 +24,24 @@ module Codebreaker
         expect(interface).to receive(:p).with("Welcome! Please enter your name: ")
         interface.get_player_name
       end
+
+      it 'called self if not have player name' do
+        interface.stub(:gets).and_return('')
+        expect(interface).to receive(:get_player_name).with(no_args())
+        interface.get_player_name
+      end
     end
 
     context '#get_attempts_quantity' do
       it 'received the message to enter attempts quantity' do
         interface.stub(:gets).and_return(10)
         expect(interface).to receive(:p).with("Please enter attempts quantity: ")
+        interface.get_attempts_quantity
+      end
+
+      it 'called self if not have attempts quantity' do
+        interface.stub(:gets).and_return(0)
+        expect(interface).to receive(:get_attempts_quantity).with(no_args())
         interface.get_attempts_quantity
       end
     end
@@ -59,14 +71,29 @@ module Codebreaker
 
     context '#play_again' do
       it 'received the message to play again' do
+        interface.stub(:gets).and_return('')
         expect(interface).to receive(:p).with("You want play again (y/n)? : ")
+        interface.play_again
+      end
+
+      it 'called #launch if player answer- y' do
+        interface.stub(:gets).and_return('y')
+        expect(interface).to receive(:launch).with(no_args())
         interface.play_again
       end
     end
 
     context '#save_result' do
       it 'received the message to save result' do
+        interface.stub(:gets).and_return('y')
         expect(interface).to receive(:p).with("You want save result (y/n)? : ")
+        interface.save_result
+      end
+
+      it 'called Game::save_result if player answer- y' do
+        pending
+        interface.stub(:gets).and_return('y')
+        expect(interface).to receive(game.save_result).with('d', 1, [1,1,1,1])
         interface.save_result
       end
     end
