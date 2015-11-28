@@ -72,7 +72,7 @@ module Codebreaker
     end
 
     def lose?
-      @attempts_quantity == 0
+      @attempts_quantity <= 0 && !victory?
     end
 
     def valid_data?

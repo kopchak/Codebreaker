@@ -25,7 +25,7 @@ module Codebreaker
     end
 
     def display_game_over
-      p 'Game over! You lose' if @game.lose? && !@game.victory?
+      p 'Game over! You lose' if @game.lose?
     end
 
     def display_you_win

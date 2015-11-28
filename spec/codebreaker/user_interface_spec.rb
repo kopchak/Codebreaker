@@ -57,7 +57,6 @@ module Codebreaker
     context '#display_game_over' do
       it 'received message "Game over! You lose"' do
         game.stub(:lose?).and_return(true)
-        game.stub(:victory?).and_return(false)
         expect(interface.display_game_over).to eq 'Game over! You lose'
       end
     end

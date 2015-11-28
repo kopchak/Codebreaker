@@ -186,6 +186,7 @@ module Codebreaker
 
     context '#lose?' do
       it 'return true if attempts count eq 0' do
+        game.stub(:victory?).and_return(false)
         game.instance_variable_set(:@attempts_quantity, 0)
         expect(game.lose?).to eq true
       end
